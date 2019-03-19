@@ -58,6 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    _getBatteryLevel();
   }
 
   void _incrementCounter() {
@@ -76,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _getBatteryLevel() async {
     String batteryLevel;
     try {
-      final int result = await platform.invokeMethod('getBatteryLevel');
+      final String result = await platform.invokeMethod('getBatteryLevel');
       batteryLevel = 'Battery level at $result % .';
     } on PlatformException catch (e) {
       batteryLevel = "Failed to get battery level: '${e.message}'.";
@@ -132,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text('Get Battery Level'),
               onPressed: _getBatteryLevel,
             ),
-            Text(_batteryLevel),
+            Text("${_batteryLevel}"),
           ],
         ),
       ),

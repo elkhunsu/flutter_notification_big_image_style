@@ -13,7 +13,6 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent)  {
-
         Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
 
         if (remoteInput != null) {
@@ -25,7 +24,6 @@ public class NotificationReceiver extends BroadcastReceiver {
                     getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(MainActivity.NOTIFICATION_ID, mBuilder.build());
         }
-
     }
 
 

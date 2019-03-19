@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.util.Log;
+import android.support.v4.app.RemoteInput;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -23,14 +24,14 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
+import static android.R.drawable.ic_delete;
 
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public static final String NOTIFICATION_REPLY = "NotificationReply";
-    public static int NOTIFICATION_ID = 200;
+    public static int NOTIFICATION_ID = 0;
     public static final int REQUEST_CODE_APPROVE = 101;
     public static final String KEY_INTENT_APPROVE = "keyintentaccept";
-
     private static final String TAG = "MyFirebaseMessaging";
 
 
@@ -70,13 +71,21 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private void sendNotification(String title, String message) {
         Bitmap icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-        PendingIntent approvePendingIntent = PendingIntent.getBroadcast(
-                this,
-                REQUEST_CODE_APPROVE,
-                new Intent(this, MainActivity.class)
-                        .putExtra(KEY_INTENT_APPROVE, REQUEST_CODE_APPROVE),
-                PendingIntent.FLAG_UPDATE_CURRENT
-        );
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        notificationIntent.setAction(Intent.ACTION_MAIN);
+        notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        notificationIntent.putExtra(KEY_INTENT_APPROVE, title);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_ONE_SHOT);
+
+//        PendingIntent approvePendingIntent = PendingIntent.getBroadcast(
+//                this,
+//                REQUEST_CODE_APPROVE,
+//                new Intent(this, NotificationReceiver.class)
+//                        .putExtra(KEY_INTENT_APPROVE, REQUEST_CODE_APPROVE),
+//                PendingIntent.FLAG_UPDATE_CURRENT
+//        );
 //        RemoteInput remoteInput = new RemoteInput.Builder((NOTIFICATION_REPLY))
 //                .setLabel("Approve Comments")
 //                .build();
@@ -91,27 +100,33 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                .setContentIntent(approvePendingIntent)
+                .setContentIntent(pendingIntent)
                 .setContentInfo(title)
                 .setLargeIcon(icon)
                 .setColor(Color.GRAY)
                 .setLights(Color.GRAY, 1000, 300)
                 .setDefaults(Notification.DEFAULT_VIBRATE)
                 .setSmallIcon(R.mipmap.ic_launcher);
+
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
     }
 
     private void notificationWithImage(Bitmap bitmap, String title, String message) {
-        Intent resultIntent = new Intent(this, MainActivity.class).setAction(Intent.ACTION_MAIN)
-                .addCategory("FLUTTER_NOTIFICATION_CLICK")
-                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        notificationIntent.setAction(Intent.ACTION_MAIN);
+        notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        notificationIntent.putExtra(KEY_INTENT_APPROVE, title);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_ONE_SHOT);
 
 //        Intent intent = new Intent(this, MainActivity.class);
 //        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
 //                PendingIntent.FLAG_ONE_SHOT);
+//        final Uri defaultSoundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
+//                + "://" + mContext.getPackageName() + "/raw/loop_notif");
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
@@ -153,6 +168,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             return null;
         }
     }
+
 
 }
 

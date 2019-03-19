@@ -7,6 +7,7 @@ import android.os.BatteryManager;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.util.Log;
 
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.MethodCall;
@@ -19,22 +20,37 @@ import io.flutter.plugins.GeneratedPluginRegistrant;
 public class MainActivity extends FlutterActivity {
     private static final String CHANNEL = "com.example.loop_app_flutter_v2/battery";
     public static int NOTIFICATION_ID = 200;
+    private static final String TAG = "MainActivity";
+    private static String message;
+    public static final String KEY_INTENT_APPROVE = "keyintentaccept";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         GeneratedPluginRegistrant.registerWith(this);
 
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {// to avoid the NullPointerException
+            String message = bundle.getString(KEY_INTENT_APPROVE);
+            Log.d(TAG, "message get Intent: " + message);
+
+        } else {
+            message = "error";
+        }
+
+
         new MethodChannel(getFlutterView(), CHANNEL).setMethodCallHandler(
                 new MethodCallHandler() {
                     @Override
                     public void onMethodCall(MethodCall call, Result result) {
                         // TODO
+
                         if (call.method.equals("getBatteryLevel")) {
                             int batteryLevel = getBatteryLevel();
-
+                            String dataMessage = getMessageFromFCM();
+                            Log.d(TAG, dataMessage);
                             if (batteryLevel != -1) {
-                                result.success(batteryLevel);
+                                result.success(message);
                             } else {
                                 result.error("UNAVAILABLE", "Battery level not available.", null);
                             }
@@ -45,6 +61,18 @@ public class MainActivity extends FlutterActivity {
                     }
                 });
 
+    }
+
+    private String getMessageFromFCM() {
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {// to avoid the NullPointerException
+
+            message = bundle.getString(KEY_INTENT_APPROVE);
+            Log.d(TAG, "getMessageFromFCM: " + message);
+        } else {
+            message = "error";
+        }
+        return message;
     }
 
     private int getBatteryLevel() {

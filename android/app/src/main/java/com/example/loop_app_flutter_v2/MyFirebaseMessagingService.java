@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.util.Log;
-import android.support.v4.app.RemoteInput;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -24,7 +23,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
-import static android.R.drawable.ic_delete;
 
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -128,7 +126,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 //        final Uri defaultSoundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
 //                + "://" + mContext.getPackageName() + "/raw/loop_notif");
 
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Uri defaultSoundUri = Uri.parse("android.resource://" + R.raw.loop_notif);//Here is FILE_NAME is the name of file that you want to play
 
         NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle();
         bigPictureStyle.setBigContentTitle(title);
